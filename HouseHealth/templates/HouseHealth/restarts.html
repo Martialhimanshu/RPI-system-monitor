@@ -1,0 +1,255 @@
+{% extends 'HouseHealth/index.html' %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'HouseHealth/js/layouts_js.js' %}"></script>
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="panel">
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="{% url 'get_house_restarts_template' house_id=house_id %}">Restarts</a></li>
+                <li><a href="{% url 'get_house_interrupts_template' house_id=house_id %}">Quick Interrupts</a></li>
+                <li><a href="{% url 'get_long_disconnects_template' house_id=house_id %}">Long Disconnects</a></li>
+
+            </ul>
+            <br>
+        </div>
+        <div class="panel-heading">
+            <h3 class="panel-title">House Id {{ house_id }}</h3>
+        </div>
+        <div class="panel-body">
+            {#            <div style="text-align: center;margin-bottom:30px">#}
+            {#                <button onclick="generate_report('{{ house_id }}')" class="btn btn-primary">Generate Sheet</button>#}
+            {#            </div>#}
+
+
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th style="text-align: center;">Astro Id</th>
+                    <th style="text-align: center;">Type</th>
+
+                    <th style="text-align: center;">Restart Time</th>
+                    <th style="text-align: center;">Reason</th>
+                    <th style="text-align: center;">Comments</th>
+                    <th style="text-align: center;">Details</th>
+
+                </tr>
+
+                </thead>
+                <tbody>
+                {% for restart in restarts %}
+
+                    <tr>
+                        <td style="text-align: center;">{{ restart.astro_id }}</td>
+                        <td style="text-align: center;">{{ restart.device_type }}</td>
+
+                        <td style="text-align: center;">{{ restart.restart_time }}</td>
+                        <td style="text-align: center;">{{ restart.reason }}</td>
+                        <td style="text-align: center;">{{ restart.comment }}</td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn btn-primary" data-toggle="collapse"
+                                    data-target=".restart_details_{{ restart.id }}">Details
+                            </button>
+                        </td>
+
+                    </tr>
+                    <tr class="collapse restart_details_{{ restart.id }}">
+                        <td colspan=6>
+                            <div>
+                                <!-- TABLE HOVER -->
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <h4 style="width:50%; float: left" class="page-title">Interrupt Pin
+                                            Statuses(checked for 50 hours from event time)
+                                        </h4>
+                                        <table class="table table-hover table-striped table-bordered"
+                                               style="background-color: #e2cce5">
+                                            <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Pin Id</th>
+                                                <th style="text-align: center;">Time</th>
+                                                <th style="text-align: center;">Status</th>
+                                            </tr>
+
+                                            </thead>
+                                            <tbody>
+                                            {% for key,value in restart.interrupt_pin_status.items %}
+                                                <tr>
+                                                    <td style="text-align: center;">{{ key }}</td>
+                                                    {% for key,sub_value in value.items %}
+                                                        <td style="text-align: center;">{{ sub_value }}</td>
+
+                                                    {% endfor %}
+                                                <tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        <h4 style="width:50%; float: left" class="page-title">Mobile Pin Statuses
+                                            (checked for 50 hours from event time)</h4>
+                                        <table class="table table-hover table-striped table-bordered"
+                                               style="background-color: #e2cce5">
+                                            <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Pin Id</th>
+                                                <th style="text-align: center;">Time</th>
+                                                <th style="text-align: center;">Status</th>
+                                            </tr>
+
+                                            </thead>
+                                            <tbody>
+                                            {% for key,value in restart.mobile_pin_status.items %}
+                                                <tr>
+                                                    <td style="text-align: center;">{{ key }}</td>
+                                                    {% for key,sub_value in value.items %}
+                                                        <td style="text-align: center;">{{ sub_value }}</td>
+
+                                                    {% endfor %}
+                                                <tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        {#                                                                            <h4 style="width:20%; float: left" class="page-title">Wifi#}
+                                        {#                                                                                    Behaviour</h4>#}
+                                        {##}
+                                        {#                                                                                <table class="table table-hover table-striped table-bordered"#}
+                                        {#                                                                                       style="background-color: #e7f1bf">#}
+                                        {#                                                                                    <thead>#}
+                                        {#                                                                                    <tr>#}
+                                        {#                                                                                        <th style="text-align: center;">From</th>#}
+                                        {#                                                                                        <th style="text-align: center;">To</th>#}
+                                        {#                                                                                        <th style="text-align: center;">Period</th>#}
+                                        {#                                                                                    </tr>#}
+                                        {##}
+                                        {#                                                                                    </thead>#}
+                                        {#                                                                                    <tbody>#}
+                                        {#                                                                                    {% for wifi in restart.wifi_disconnections %}#}
+                                        {#                                                                                        <tr>#}
+                                        {#                                                                                            <td style="text-align: center;">{{ wifi.time_from }}</td>#}
+                                        {#                                                                                            <td style="text-align: center;">{{ wifi.time_to }}</td>#}
+                                        {#                                                                                            <td style="text-align: center;">{{ wifi.period }}</td>#}
+                                        {#                                                                                        <tr>#}
+                                        {##}
+                                        {#                                                                                    {% endfor %}#}
+                                        {##}
+                                        {#                                                                                    </tbody>#}
+                                        {#                                                                                </table>#}
+                                    </div>
+                                </div>
+                                <!-- END TABLE HOVER -->
+
+                            </div>
+                        </td>
+                    </tr>
+
+
+
+                {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END TABLE HOVER -->
+
+{% endblock %}
+
+{% block meta %}
+    <div style="padding-left:5px ">
+        <ul>
+            <li>
+                <b>Astro Id</b>
+                <p>Id of Slaves/Astro</p>
+            </li>
+
+            <li>
+                <b>Device Type</b>
+                <p>The type of astro- single, double or triple</p>
+            </li>
+            <li>
+                <b>Restart Time</b>
+                <p>The time of restart event</p>
+            </li>
+            <li>
+                <b>Reason</b>
+                <p>The reason of Restart. Possible reasons can be</p>
+
+                <ol>
+                    <li>NOT A SOFTWARE RESTART
+                        <p>If the time of last healthcheck received is less than 2 minutes before restart.</p>
+                    </li>
+                    <li>SOFTWARE RESTART
+                        <p>If the time of last health check received is in between 2-5 minutes of astro event</p>
+                    </li>
+                    <li>MAYBE SOFTWARE RESTART
+                        <p>If the time of last healthcheck received is more than 5 minutes before restart.</p>
+                    </li>
+                    <li>POWER CUT
+                        <p>If there was a power cut before Astro Restart.</p>
+                    </li>
+                    <li>INSTALLATION/LONG WAKE UP
+                        <p>If no healthcheck received in 24 hours before Restart</p>
+                    </li>
+                </ol>
+            </li>
+            <li>
+
+
+                <b>Comments</b>
+                <p>Information about the Restart Event</p>
+            </li>
+            <li>
+
+                <b>Interrupt Pin Status</b>
+                <p>The last received status of Interrupt Pins. If no data found for 50 hours before restart event,
+                    status is
+                    set as
+                    NOT Found.</p>
+                <ol>
+                    <li>Pin ID
+                        <p>Pin no. of pin</p></li>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+            </li>
+            <li>
+                <b>Mobile Pin Status</b>
+                <p>The last received status of Mobile Pins. If no data found for 50 hours before restart event, status
+                    is
+                    set as NOT
+                    Found.</p>
+                <ol>
+                    <li>Pin ID
+                        <p>Pin no. of pin</p></li>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+            </li>
+        </ul>
+    </div>
+
+
+
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

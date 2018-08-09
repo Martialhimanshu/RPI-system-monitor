@@ -1,0 +1,217 @@
+{% extends 'HouseHealth/index.html' %}
+
+{% block body %}
+    {% csrf_token %}
+    <!-- MAIN -->
+
+
+    <!-- TABLE HOVER -->
+    <div class="panel">
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li><a href="{% url 'get_house_restarts_template' house_id=house_id %}">Restarts</a></li>
+                <li class="active"><a href="{% url 'get_house_interrupts_template' house_id=house_id %}">Quick
+                    Interrupts</a></li>
+                <li><a href="{% url 'get_long_disconnects_template' house_id=house_id %}">Long Disconnects</a></li>
+
+            </ul>
+            <br>
+        </div>
+
+        <div class="panel-heading">
+            <h3 class="panel-title">House Id {{ house_id }}</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th style="text-align: center;">#</th>
+                    <th style="text-align: center;">Astro ID</th>
+                    <th style="text-align: center;">Pin</th>
+                    <th style="text-align: center;">Time</th>
+                    <th style="text-align: center;">Count</th>
+                    <th style="text-align: center;">Interrupt Pin State</th>
+                    <th style="text-align: center;">Mobile Pin State</th>
+                    <th style="text-align: center;">Details</th>
+
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in q_interrupts %}
+
+                    <tr>
+                        <td style="text-align: center;">{{ forloop.counter }}</td>
+                        <td style="text-align: center;">{{ i.astro_id }}</td>
+                        <td style="text-align: center;">{{ i.pin }}</td>
+
+                        <td style="text-align: center;">{{ i.time }}</td>
+                        <td style="text-align: center;">{{ i.count }}</td>
+                        <td style="text-align: center;"><b>Time:</b>{{ i.interrupt_pin_state.interrupt_call_time }}
+                            <hr>
+                            <b>State:</b>{{ i.interrupt_pin_state.pin_status }}</td>
+                        <td style="text-align: center;"><b>Time:</b>{{ i.mobile_pin_state.mobile_call_time }}
+                            <hr>
+                            <b>Status:</b>{{ i.mobile_pin_state.pin_status }}</td>
+                        <td style="text-align: center;">
+                            <button type="button" class="btn btn-primary" data-toggle="collapse"
+                                    data-target=".qi_details_{{ i.id }}">Details
+                            </button>
+                        </td>
+
+
+                    </tr>
+                    <tr class="collapse qi_details_{{ i.id }}">
+                        <td colspan=8>
+                            <div>
+                                <!-- TABLE HOVER -->
+                                <div class="panel">
+                                    <div class="panel-body">
+                                        <h4 style="width:50%; float: left" class="page-title">Other Interrupt Pin
+                                            Statuses </h4>
+                                        <table class="table table-hover table-striped table-bordered"
+                                               style="background-color: #e2cce5">
+                                            <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Pin Id</th>
+                                                <th style="text-align: center;">Time</th>
+                                                <th style="text-align: center;">Status</th>
+                                            </tr>
+
+                                            </thead>
+                                            <tbody>
+                                            {% for key,value in i.other_interrupt_pin_state.items %}
+                                                <tr>
+                                                    <td style="text-align: center;">{{ key }}</td>
+                                                    {% for key,sub_value in value.items %}
+                                                        <td style="text-align: center;">{{ sub_value }}</td>
+
+                                                    {% endfor %}
+                                                <tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        <h4 style="width:50%; float: left" class="page-title">Other Mobile Pin
+                                            Statuses</h4>
+                                        <table class="table table-hover table-striped table-bordered"
+                                               style="background-color: #e2cce5">
+                                            <thead>
+                                            <tr>
+                                                <th style="text-align: center;">Pin Id</th>
+                                                <th style="text-align: center;">Time</th>
+                                                <th style="text-align: center;">Status</th>
+                                            </tr>
+
+                                            </thead>
+                                            <tbody>
+                                            {% for key,value in i.other_mobile_pin_state.items %}
+                                                <tr>
+                                                    <td style="text-align: center;">{{ key }}</td>
+                                                    {% for key,sub_value in value.items %}
+                                                        <td style="text-align: center;">{{ sub_value }}</td>
+
+                                                    {% endfor %}
+                                                <tr>
+                                            {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END TABLE HOVER -->
+
+{% endblock %}
+
+{% block meta %}
+    <div style="padding-left:5px ">
+
+        <ul>
+            <li>
+                <b>Astro Id</b>
+                <p>Id of Slaves/Astro</p>
+            </li>
+
+            <li>
+                <b>Pin</b>
+                <p>Id of Pin on which Quick Interrupt was detected</p>
+            </li>
+            <li>
+                <b>Count</b>
+                <p>Count of Quick Interrupts in a minute </p>
+            </li>
+            <li>
+                <b>Interrupt Pin State</b>
+                <p>The last received status of Interrupted Pin. If no data found for 50 hours before event, status is
+                    set as NOT
+                    Found.</p>
+                <ol>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+
+            </li>
+            <li>
+                <b>Mobile Pin State</b>
+                <p>The last received status of Mobile Pin. If no data found for 50 hours before event, status is
+                    set as NOT
+                    Found.</p>
+                <ol>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+
+            </li>
+
+            <li>
+
+                <b>Other Interrupt Pin Statuses</b>
+                <p>The last received status of Interrupt Pins. If no data found for 50 hours before restart event,
+                    status is
+                    set as
+                    NOT Found.</p>
+                <ol>
+                    <li>Pin ID
+                        <p>Pin no. of pin</p></li>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+            </li>
+            <li>
+                <b>Other Mobile Pin Status</b>
+                <p>The last received status of Mobile Pins. If no data found for 50 hours before restart event, status
+                    is
+                    set as NOT
+                    Found.</p>
+                <ol>
+                    <li>Pin ID
+                        <p>Pin no. of pin</p></li>
+                    <li>Time
+                        <p>Time of last found status of Pin</p></li>
+                    <li>Status
+                        <p>Last found status of Pin</p></li>
+                </ol>
+            </li>
+        </ul>
+    </div>
+
+
+
+
+{% endblock %}

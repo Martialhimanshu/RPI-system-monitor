@@ -1,0 +1,134 @@
+{% extends 'HouseHealth/index.html' %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'HouseHealth/js/layouts_js.js' %}"></script>
+
+{% endblock %}
+{% block body %}
+    {% csrf_token %}
+    <!-- MAIN -->
+
+    <!-- TABLE HOVER -->
+    <div class="panel">
+
+        <div class="panel-heading">
+            <h3 class="panel-title">Houses</h3>
+            <h4>Last Updated {{ last_updated }}</h4>
+        </div>
+        <div class="panel-body">
+            <div style="text-align: center;margin-bottom:30px">
+                <button onclick="update_house(this.id)" class="btn btn-primary">Update Houses</button>
+            </div>
+
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    {% for attribute in attributes %}
+                        <th style="text-align: center;">{{ attribute }}</th>
+                    {% endfor %}
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for house in house_data %}
+                    <tr>
+                        <td style="text-align: center;">{{ forloop.counter }}</td>
+                        <td style="text-align: center;">
+                            <a href="{% url 'get_house_restarts_template' house_id=house.house_id %}"> {{ house.house_id }}</a>
+                        </td>
+                        <td style="text-align: center;">{{ house.house_name }}</td>
+
+                        <td style="text-align: center;" {% if house.status != 'ACTIVE' %}class="bg-danger" {% else %}
+                            class="bg-success"{% endif %}>{{ house.status }}</td>
+                        <td style="text-align: center;">
+                            <img id="thumbnail_{{ house.house_id }}_restart"
+                                 src="{% static 'HouseHealth/images/success.png' %}" border=3 height=20 width=20>
+                            <script>load_restart_thumbnail("thumbnail_{{ house.house_id }}_restart", {{ house.restart_count }})</script>
+                            {% if house.restart_count > 0 %}
+                                <a href="{% url 'get_house_restarts_template' house_id=house.house_id %}">
+                                    Count: {{ house.restart_count }}</a>
+                            {% endif %}
+                        </td>
+
+                        <td style="text-align: center;">
+                            <img id="thumbnail_{{ house.house_id }}_qi"
+                                 src="{% static 'HouseHealth/images/success.png' %}" border=3 height=20 width=20>
+                            <script>load_restart_thumbnail("thumbnail_{{ house.house_id }}_qi", {{ house.qi_count }})</script>
+                            {% if house.qi_count > 0 %}
+                                <a href="{% url 'get_house_interrupts_template' house_id=house.house_id %}">
+                                    Count: {{ house.qi_count }}</a>
+                            {% endif %}
+
+
+                        </td>
+                        <td style="text-align: center;">
+                            <img id="thumbnail_{{ house.house_id }}_ld"
+                                 src="{% static 'HouseHealth/images/success.png' %}" border=3 height=20 width=20>
+                            <script>load_restart_thumbnail("thumbnail_{{ house.house_id }}_ld", {{ house.ld_count }})</script>
+                            {% if house.ld_count > 0 %}
+                                <a href="{% url 'get_long_disconnects_template' house_id=house.house_id %}">
+                                    Count: {{ house.ld_count }}</a>
+                            {% endif %}
+
+
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END TABLE HOVER -->
+
+{% endblock %}
+
+
+{% block meta %}
+    <div style="padding-left:5px ">
+
+
+        <ul>
+            <li>
+                <b>Details</b>
+                <p>The houses are updated every 30 minutes. The time range of data shown here can be configured in
+                    settings. Default is 24 hours. </p>
+            </li>
+
+            <li>
+                <b>Last Updated</b>
+                <p>The time at which houses were last updated</p>
+            </li>
+
+            <li>
+                <b>Update House</b>
+                <p>Updates the data of all houses. Wait for a few seconds untill page reloads.</p>
+            </li>
+
+            <li>
+                <b>Status</b>
+                <p>State of Aviator. Updated on every refresh of page.</p>
+            </li>
+
+            <li>
+                <b>Restarts</b>
+                <p>Number of Restarts.</p>
+            </li>
+
+            <li>
+                <b>Quick Interrupts</b>
+                <p>Number of Quick Interrupts</p>
+            </li>
+            <li>
+                <b>Long Disconnects</b>
+                <p>Number of Long Disconnects</p>
+            </li>
+
+        </ul>
+    </div>
+
+
+
+
+{% endblock %}

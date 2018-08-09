@@ -1,0 +1,11 @@
+{% extends 'lense/index.html' %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'HouseHealth/js/layouts_js.js' %}"></script>
+
+{% endblock %}
+{% block body %}
+    {% csrf_token %}
+    <h1>Hello world</h1>
+{% endblock %}

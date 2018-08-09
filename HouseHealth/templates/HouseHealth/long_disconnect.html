@@ -1,0 +1,73 @@
+{% extends 'HouseHealth/index.html' %}
+{% block body %}
+    {% csrf_token %}
+    <!-- MAIN -->
+
+
+    <!-- TABLE HOVER -->
+    <div class="panel">
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li><a href="{% url 'get_house_restarts_template' house_id=house_id %}">Restarts</a></li>
+                <li><a href="{% url 'get_house_interrupts_template' house_id=house_id %}">Quick Interrupts</a></li>
+                <li class="active"><a href="{% url 'get_long_disconnects_template' house_id=house_id %}">Long
+                    Disconnects</a></li>
+
+
+            </ul>
+            <br>
+        </div>
+
+        <div class="panel-heading">
+            <h3 class="panel-title">House Id {{ house_id }}</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th style="text-align: center;">#</th>
+                    <th style="text-align: center;">Astro ID</th>
+                    <th style="text-align: center;">Inactive Since</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in long_disconnect %}
+
+                    <tr>
+                        <td style="text-align: center;">{{ forloop.counter }}</td>
+                        <td style="text-align: center;">{{ i.astro_id }}</td>
+                        <td style="text-align: center;">{{ i.disconnected_at }}</td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END TABLE HOVER -->
+
+{% endblock %}
+
+{% block meta %}
+    <div style="padding-left:5px ">
+
+
+        <ul>
+            <li>
+                <b>Astro Id</b>
+                <p>Id of Slaves/Astro</p>
+            </li>
+
+            <li>
+                <b>Inactive Since</b>
+                <p>Time from which slave is detected as Inactive</p>
+            </li>
+
+        </ul>
+    </div>
+
+
+
+
+{% endblock %}

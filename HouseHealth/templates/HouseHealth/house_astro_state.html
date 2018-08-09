@@ -1,0 +1,59 @@
+{% extends 'HouseHealth/index.html' %}
+{% load static %}
+
+{% block head %}
+    <script src="{% static 'HouseHealth/js/astro_state.js' %}"></script>
+
+{% endblock %}
+{% block body %}
+
+    <!-- TABLE HOVER -->
+    <div class="panel">
+        <div class="panel-body">
+            <table class="table table-hover table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th style="text-align: center;">#</th>
+                    <th style="text-align: center;">House Name</th>
+                    <th style="text-align: center;">Update House</th>
+                                        <th style="text-align: center;">Astro State</th>
+                    <th style="text-align: center;">Delete Data</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <form action="/health/house_astro_state/" method="POST">
+                    {% csrf_token %}
+                    {% for house in houses %}
+                        <tr>
+                            <td style="text-align: center;">{{ forloop.counter }}</td>
+                            <td style="text-align: center;">{{ house.house_name }}</td>
+                            <td style="text-align: center;">
+                                <input type='hidden' value="False" name="{{ house.house_id }}_toupdate">
+                                <input type="checkbox" name="{{ house.house_id }}_toupdate" value="True"
+                                        {% ifequal house.to_update True %} checked {% endifequal %}>
+                            </td>
+                            <td style="text-align: center;">
+                                <select name="{{ house.house_id }}_astrostate">
+                                    {% for state in states %}
+                                        <option value="{{ state }}" {% ifequal house.astro_state state %} selected {% endifequal %}>{{ state }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </td>
+                            <td>
+                                <button type="button" onclick="delete_house(this.id,'{{ house.house_id }}')" class="btn btn-primary">
+                                    Delete Data
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr><input type="submit" value="OK"></tr>
+                </form>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END TABLE HOVER -->
+
+{% endblock %}
