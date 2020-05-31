@@ -30,7 +30,7 @@ def check_long_disconnect_alert(astro_id, disconnected_at):
     try:
         return "Long Disconnect Detected for Astro "+ astro_id+" since "+disconnected_at+".\n"
     except Exception as e:
-        logger.error("Ecxeption in checking long disconnect error"+str(e))
+        logger.error("Exception in checking long disconnect error"+str(e))
         raise e
 
 
